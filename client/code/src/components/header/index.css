@@ -1,0 +1,35 @@
+.app-logo {
+    width: 280px;
+    height: 75px;
+    padding: 10px 0;
+}
+
+.app-logo img {
+    width: 100%;
+    height: 100%;
+}
+
+.nav-bar {
+    /* background-image: linear-gradient(to right bottom, #758283, #5f6b6d, #4a5557, #373f42, #242b2e); */
+    /* background-image: linear-gradient(to right bottom, #758283, #5a6265, #404447, #27282a, #0d0d0d); */
+    /* background-image: linear-gradient(to right top, #cad5e2, #979da7, #66686f, #39393c, #0d0d0d); */
+    /* background-image: linear-gradient(to right top, #cad5e2, #b2c0ca, #9cabb2, #88969a, #758283); */
+
+    /*  */
+    background-image: linear-gradient(to right bottom, #cad5e2, #b2c0ca, #9cabb2, #88969a, #758283);
+    /*  */
+
+    /* background-image: linear-gradient(to right, #cad5e2, #91a0bb, #5f6d94, #363c6c, #120e43); */
+
+
+    /* background-image: linear-gradient(to right, #758288, #849198, #94a1a9, #a4b0ba, #b4c0cb, #aab4bf, #a1a8b3, #979da7, #72757d, #4f5055, #2e2e30, #0d0d0d); */
+
+
+}
+
+.header-right-section-lg{
+    width: 651px;
+    display: flex!important;
+    justify-content: center;
+    align-items: center;
+}
