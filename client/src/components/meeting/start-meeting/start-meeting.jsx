@@ -10,18 +10,28 @@ import { socket } from '../../../services/socket/socket-connection';
 import { io } from 'socket.io-client';
 import { useSocketContext } from '../../../contexts/socket-context';
 import { CommonSnackbarAlert } from '../../notification/snackbar-alert';
+import { MeetingDialog } from '../../dialogs/meeting-dialog/MeetingDialog';
 
 
 
 import { startNewMeeting } from '../../../services/meeting/start-meeting';
+
+
+const infoTexts = {
+    dialogContentText: 'Share this joining info with people that you want in the meeting',
+    dialogTitle: 'Here\'s the link to your meeting'
+};
 
 export function StartMeeting() {
 
     const [meetingAlert, setMeetingAlert] = React.useState({
         action: '',
         isVisible: false,
-        severity: ''
+        severity: '',
+        message: '',
     });
+
+    const [meetingIdInfo, setMeetingIdInfo] = React.useState('');
 
     const { createMeeting } = useSocketContext();
 
@@ -44,14 +54,15 @@ export function StartMeeting() {
     }
 
     async function handleCreateMeeting() {
-        const { action, isVisible, severity, message } = await createMeeting();
+        const { action, isVisible, severity, message, meetingId } = await createMeeting();
         setMeetingAlert({
             action,
             isVisible,
             severity,
-            message
+            message,
         });
 
+        setMeetingIdInfo(meetingId);
 
     }
 
@@ -60,7 +71,8 @@ export function StartMeeting() {
         setMeetingAlert({
             action: '',
             isVisible: false,
-            severity: ''
+            severity: '',
+            message: '',
         });
     }
 
@@ -69,6 +81,14 @@ export function StartMeeting() {
         message: meetingAlert.message,
         severity: meetingAlert.severity,
         clearAlerts
+    };
+
+
+    const createMeetingDialogProps = {
+        isOpen: meetingAlert.isVisible,
+        meetingId: meetingIdInfo,
+        dialogContentText: infoTexts.dialogContentText,
+        dialogTitle: infoTexts.dialogTitle
     };
 
     return (
@@ -86,6 +106,7 @@ export function StartMeeting() {
 
             {/* <button onClick={sendMessage}>Send Message</button> */}
 
+            <MeetingDialog createMeetingDialogProps={createMeetingDialogProps} />
             <span> <CommonSnackbarAlert snackbarBehaviourState={snackbarBehaviour} /></span>
 
 

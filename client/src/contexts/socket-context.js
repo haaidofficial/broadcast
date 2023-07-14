@@ -26,7 +26,8 @@ export function SocketContextProvider({ children }) {
                     action: socketEventsConstants.MEETING_CREATED,
                     isVisible: true,
                     message: 'Meeting created successfully',
-                    severity: 'success'
+                    severity: 'success',
+                    meetingId
                 })
                 // setMeetingAlert(prevState => ({ action: socketEventsConstants.MEETING_CREATED, isVisible: true, message: 'Meeting created successfully', severity: 'success' }));
                 // console.log('Meeting created');

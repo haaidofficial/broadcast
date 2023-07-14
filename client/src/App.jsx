@@ -1,15 +1,12 @@
-import { Home } from './components/home/Home';
-import { Chat } from './components/chat/Chat';
 import { SocketContextProvider } from './contexts/socket-context';
+import { Main } from './components/Main';
 
 
 function App() {
 
   return (
     <SocketContextProvider>
-      
-      {/* <Chat /> */}
-      <Home />
+      <Main />
     </SocketContextProvider>
   );
 }
