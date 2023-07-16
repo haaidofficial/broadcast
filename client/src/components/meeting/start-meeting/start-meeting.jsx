@@ -1,21 +1,11 @@
 import * as React from 'react';
 import VideocamOutlinedIcon from '@mui/icons-material/VideocamOutlined';
 import Button from '@mui/material/Button';
-import './index.css';
-
-
-
-
-import { socket } from '../../../services/socket/socket-connection';
 import { io } from 'socket.io-client';
 import { useSocketContext } from '../../../contexts/socket-context';
 import { CommonSnackbarAlert } from '../../notification/snackbar-alert';
 import { MeetingDialog } from '../../dialogs/meeting-dialog/MeetingDialog';
-
-
-
-import { startNewMeeting } from '../../../services/meeting/start-meeting';
-
+import './index.css';
 
 const infoTexts = {
     dialogContentText: 'Share this joining info with people that you want in the meeting',
@@ -34,19 +24,6 @@ export function StartMeeting() {
     const [meetingIdInfo, setMeetingIdInfo] = React.useState('');
 
     const { createMeeting } = useSocketContext();
-
-
-    // function startMeetingHandler() {
-    //     // const id = startNewMeeting();
-
-
-
-    //     // socket.join(id)
-    //     // console.log(id);
-
-    //     socket.emit('create-meeting', 2023);
-    // }
-
 
 
     function sendMessage() {
@@ -76,13 +53,15 @@ export function StartMeeting() {
         });
     }
 
+
+
     const snackbarBehaviour = {
         isOpen: meetingAlert.isVisible,
         message: meetingAlert.message,
         severity: meetingAlert.severity,
         clearAlerts
     };
-
+console.log(snackbarBehaviour);
 
     const createMeetingDialogProps = {
         isOpen: meetingAlert.isVisible,

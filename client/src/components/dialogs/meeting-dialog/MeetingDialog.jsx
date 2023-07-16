@@ -7,7 +7,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-
+import { windowHistoryApi } from '../../../services/windowHistoryApi';
 
 export function MeetingDialog({ createMeetingDialogProps }) {
     const { isOpen, meetingId, dialogContentText, dialogTitle } = createMeetingDialogProps;
@@ -26,6 +26,20 @@ export function MeetingDialog({ createMeetingDialogProps }) {
     const handleClose = () => {
         setOpen(false);
     };
+
+    
+    function handleStartMeeting() {
+        const data = {
+            state: {
+                meetingId,
+                action: 'join-meeting-after-meeting-creating'
+            },
+            url: 'http://localhost:5200/?meetingId='+meetingId
+        };
+
+        windowHistoryApi(data);
+    }
+    
 
     return (
         <div>
@@ -55,7 +69,7 @@ export function MeetingDialog({ createMeetingDialogProps }) {
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    <Button variant="text" sx={{ color: '#6a6e74' }}>Join Meeting</Button>
+                    <Button variant="text" sx={{ color: '#6a6e74' }} onClick={handleStartMeeting}>Join Meeting</Button>
                     <Button onClick={handleClose}>Dismiss</Button>
                 </DialogActions>
             </Dialog>

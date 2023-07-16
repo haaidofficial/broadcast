@@ -96,8 +96,8 @@ export function Header(props) {
             </Typography>
             <Divider />
             <List>
-                {navItems.map((item) => (
-                    <ListItem key={item.value} disablePadding>
+                {navItems.map((item, index) => (
+                    <ListItem key={item.value + index} disablePadding>
                         <ListItemButton sx={{ textAlign: 'center' }}>
                             <ListItemText primary={item.value} />
                         </ListItemButton>
@@ -141,8 +141,9 @@ export function Header(props) {
 
                     </Typography>
                     <Box sx={{ display: { xs: 'none', sm: 'block' } }} className={joinMeetingButtonState === 'join-input' && 'header-right-section-lg'}>
-                        {navItems.map((item) => (
+                        {navItems.map((item, index) => (
                             <GenerateButton
+                                key={index}
                                 item={item}
                                 clickHandler={handleButtonClick}
                                 joinMeetingButtonState={joinMeetingButtonState}
