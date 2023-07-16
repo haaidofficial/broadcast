@@ -8,10 +8,13 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import { windowHistoryApi } from '../../../services/windowHistoryApi';
+import { useRouterContext } from '../../../contexts/route-context';
+
 
 export function MeetingDialog({ createMeetingDialogProps }) {
     const { isOpen, meetingId, dialogContentText, dialogTitle } = createMeetingDialogProps;
     const [open, setOpen] = React.useState(false);
+    const { updateComponentView } = useRouterContext();
 
     React.useEffect(() => {
         if (isOpen) {
@@ -27,19 +30,21 @@ export function MeetingDialog({ createMeetingDialogProps }) {
         setOpen(false);
     };
 
-    
+
     function handleStartMeeting() {
+        const url = 'http://localhost:5200/?meetingId=' + meetingId;
         const data = {
             state: {
                 meetingId,
                 action: 'join-meeting-after-meeting-creating'
             },
-            url: 'http://localhost:5200/?meetingId='+meetingId
+            url
         };
 
         windowHistoryApi(data);
+        updateComponentView({ url: '?meetingId=' + meetingId });
     }
-    
+
 
     return (
         <div>
