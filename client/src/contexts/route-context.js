@@ -5,7 +5,7 @@ const RouterContext = createContext();
 
 export function RouterContextProvider({ children }) {
 
-    const [component, setComponent] = useState({ url: '/' });
+    const [component, setComponent] = useState({ url: window.location.search });
 
 
     function updateComponentView(url) {

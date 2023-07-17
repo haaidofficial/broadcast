@@ -42,7 +42,7 @@ export function MeetingDialog({ createMeetingDialogProps }) {
         };
 
         windowHistoryApi(data);
-        updateComponentView({ url: '?meetingId=' + meetingId });
+        updateComponentView('?meetingId=' + meetingId);
     }
 
 

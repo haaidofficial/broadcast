@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -11,22 +10,21 @@ import Grid from '@mui/material/Grid';
 import './index.css';
 
 
-
-function ContainerCard() {
-    return (
-        <Box className='video-section-container'>
-          
-        </Box>
-    );
-}
-
-
-export function VideoSectionMain() {
+export function MeetingSettingVideoMic(params) {
     return (
         <>
-            <Grid item md={8} sm={12} xs={12}>
-                <ContainerCard />
-            </Grid>
+            <Card sx={{ minWidth: 275 }}>
+                <CardContent>
+                    <Box className=''>
+                        <Box>
+
+                        </Box>
+                    </Box>
+                </CardContent>
+                <CardActions>
+                    <Button size="small">Learn More</Button>
+                </CardActions>
+            </Card>
         </>
     )
 }
