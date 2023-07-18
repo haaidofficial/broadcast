@@ -28,8 +28,9 @@ function initSocket(httpServer) {
 
 
 
-        socket.on('new-message', (data) => {
-            console.log(data);
+        socket.on('send-message-inside-meeting', (data) => {
+            const { meetingId, message } = data;
+            io.to(meetingId).emit(socketEventsConstants.NEW_MESSAGE_IN_MEETING, { message });
         });
     })
 }

@@ -1,0 +1,10 @@
+.chat-message-input{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-message-input-field{
+    width: 100%;
+}

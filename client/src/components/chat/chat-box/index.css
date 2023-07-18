@@ -1,0 +1,20 @@
+.chat-box {
+    /* width: 100%; */
+}
+
+.chat-box-paper {
+    display: inline-block;
+    padding: 5px 15px;
+}
+
+
+.remote-user-chat {
+    background-color: white!important;
+    color: !important;
+}
+
+
+.local-user-chat {
+    background-color: #03203C!important;
+    color: white!important;
+}

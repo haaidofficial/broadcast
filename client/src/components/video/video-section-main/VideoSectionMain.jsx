@@ -15,17 +15,18 @@ import './index.css';
 function ContainerCard() {
     return (
         <Box className='video-section-container'>
-          
+
         </Box>
     );
 }
 
 
-export function VideoSectionMain() {
+export function VideoSectionMain({ children }) {
     return (
         <>
             <Grid item md={8} sm={12} xs={12}>
                 <ContainerCard />
+                {children}
             </Grid>
         </>
     )

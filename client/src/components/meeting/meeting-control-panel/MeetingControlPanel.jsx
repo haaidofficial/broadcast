@@ -25,7 +25,7 @@ import './index.css';
 export function MeetingControlPanel() {
     return (
         <>
-            <Grid item md={8} sm={12} xs={12}>
+            <Grid item md={12} sm={12} xs={12}>
                 <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '20px'}}>
                     <Stack spacing={2} direction="row">
                         <Button variant="outlined" sx={{ color: '#6a6e74', border: '1px solid #5d5d5d' }}>
@@ -39,6 +39,9 @@ export function MeetingControlPanel() {
                         </Button>
                         <Button variant="outlined" sx={{ color: '#6a6e74', border: '1px solid #5d5d5d' }}>
                             <PresentToAllIcon />
+                        </Button>
+                        <Button variant="outlined" sx={{ color: '#6a6e74', border: '1px solid #5d5d5d' }}>
+                            <MicIcon />
                         </Button>
                     </Stack>
                 </Box>

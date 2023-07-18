@@ -15,9 +15,10 @@ export function MeetingSection() {
             <Box className='bg-dark'>
                 <Container maxWidth="xl">
                     <Grid container >
-                        <VideoSectionMain />
+                        <VideoSectionMain>
+                            <MeetingControlPanel />
+                        </VideoSectionMain>
                         <Chat />
-                        <MeetingControlPanel />
                     </Grid>
                 </Container>
             </Box>
