@@ -1,96 +1,120 @@
 import { Home } from "./home/Home";
-import { Chat } from "./chat/chat-main-section/Chat";
 import { MeetingSection } from "./meeting/meeting-section/MeetingSection";
-import { RouterContextProvider, useRouterContext } from "../contexts/route-context";
+import {
+    RouterContextProvider,
+    useRouterContext
+} from "../contexts/route-context";
 import { ErrorPage } from "./error-pages/ErrorPage";
+import { queryParamsConstants } from "../constants/query-params-constants";
 
-
-const availableURLs = [
-    '/',
-];
+const availableURLs = ["/"];
 
 const componentViews = [
     {
-        url: '/',
+        url: queryParamsConstants.BASE_URL,
         component: <Home />
     },
     {
-        url: 'meetingId',
+        url: queryParamsConstants.MEETING_ID_PARAM,
         component: <MeetingSection />
     },
-
+    {
+        url: queryParamsConstants.ACTION_AND_MEETING_PARAM,
+        component: <MeetingSection />
+    }
 ];
 
 function NavigateComponent() {
     const { component } = useRouterContext();
 
     function generateComponent() {
-
-
         if (!checkIfUrlExists(window.location.pathname)) {
             return {
                 component: <ErrorPage errorCode={404} />
-            }
+            };
         }
 
-        if (!checkIfQueryParamsExist('?')) {
+        if (!checkIfQueryParamsExist("?")) {
             return {
-                url: '/',
+                url: "/",
                 component: <Home />
             };
         }
 
-
-        const view = validate_With_Available_QueryParams(componentViews)
+        const view = check_equlity_of_query_params(componentViews);
         if (!view) {
             return {
                 component: <ErrorPage errorCode={404} />
-            }
+            };
         }
 
         return view;
     }
 
-
     function checkIfQueryParamsExist(param) {
         const index = window.location.search.indexOf(param);
 
-        return (index !== -1);
+        return index !== -1;
     }
-
-
 
     function checkIfUrlExists(params) {
         return availableURLs.includes(params);
     }
 
+    function check_equlity_of_query_params(queryParamsList) {
 
-    function validate_With_Available_QueryParams(queryParamsList) {
+        const urlParams = new URLSearchParams(component.url);
+        const params = {
+            keys: '',
+            values: ''
+        };
+        let index = 0;
+        const queryParamsArray = urlParams.entries();
+
+        for (const val of queryParamsArray) {
+
+            let separator = '';
+            if (index > 0) {
+                separator = '&';
+            }
+            params.keys += separator + val[0];
+            params.values += separator + val[1];
+
+            index++;
+        }
+
+
         return queryParamsList.find(item => {
-            const urlSearchParams = new URLSearchParams(component.url);
-            console.log(urlSearchParams.get(item.url));
+            const temp = params.values.split('&');
+            if (params.keys === queryParamsConstants.ACTION_AND_MEETING_PARAM) {
 
-            return (urlSearchParams.get(item.url) !== null);
+                if (temp[0] !== 'joinMeeting' || temp[1] == '') {
+                    return false;
+                }
+               
+            }
+            else if (params.keys === queryParamsConstants.MEETING_ID_PARAM) {
+
+                if (temp[0] == '') {
+                    return false;
+                }
+            }
+            return (item.url === params.keys);
         });
-
     }
 
     const view = generateComponent();
-    console.log(view);
 
     return (
         <>
-
             {view.component}
 
             {/* <Home /> */}
         </>
-    )
+    );
 }
 
-
 export function Main() {
-
     return (
         <RouterContextProvider>
             <NavigateComponent />

@@ -9,7 +9,8 @@ import { JoinMeeting } from "../meeting/join-meeting/join-meeting";
 
 
 export function Home() {
-    console.log('Home');
+
+    
     return (
         <>
             <Header />

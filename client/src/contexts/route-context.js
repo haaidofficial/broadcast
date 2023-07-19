@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 const RouterContext = createContext();
 
@@ -6,6 +6,7 @@ const RouterContext = createContext();
 export function RouterContextProvider({ children }) {
 
     const [component, setComponent] = useState({ url: window.location.search });
+
 
 
     function updateComponentView(url) {
