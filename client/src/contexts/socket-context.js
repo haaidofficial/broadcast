@@ -14,11 +14,13 @@ export function SocketContextProvider({ children }) {
     severity: ""
   });
 
-  const [newMessage, setNewMessage] = useState({ message: "" });
+  const [newMessage, setNewMessage] = useState({ message: "", user: { userId: '', username: '' } });
 
   const meetingIdRef = useRef("");
+  const userRef = useRef({ userId: '', username: '', });
 
   useEffect(() => {
+    userRef.current = createUser();
     listToNewMessageInMeeting();
   }, []);
 
@@ -47,18 +49,34 @@ export function SocketContextProvider({ children }) {
     });
   }
 
-  function sendMessageInsideMeeting({ meetingId, event, message }) {
+  function sendMessageInsideMeeting({ meetingId, event, message, user }) {
     console.log(meetingId, event, message);
-    socket.emit(event, { meetingId, message });
+    socket.emit(event, { meetingId, user, message });
   }
 
   function insertMessageInChatState(data) {
-    const { message } = data;
-    setNewMessage({ message });
+    const { message, user, dateTime } = data;
+    console.log(data);
+    let isRemoteUser = true;
+    if (userRef.current.userId === user.userId) {
+      isRemoteUser = false;
+    }
+    setNewMessage({ message, user, isRemoteUser, dateTime });
   }
 
   function listToNewMessageInMeeting() {
     socket.on("new_message_in_meeting", insertMessageInChatState);
+  }
+
+  function createUser() {
+
+    const user = {
+      userId: UUIDV4(),
+      username: '',
+    }
+
+    return user;
+
   }
 
   const contextProviderValues = {
@@ -67,7 +85,8 @@ export function SocketContextProvider({ children }) {
     sendMessageInsideMeeting,
     listToNewMessageInMeeting,
     newMessage,
-    meetingIdRef
+    meetingIdRef,
+    userRef
   };
 
   return (

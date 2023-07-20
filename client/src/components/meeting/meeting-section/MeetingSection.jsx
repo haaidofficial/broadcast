@@ -21,7 +21,7 @@ export function MeetingSection() {
                 const data = {
                     state: {
                         meetingId: urlSearchParams.get('meetingId'),
-                        action: 'join-meeting-after-meeting-creating'
+                        action: 'join-meeting-after-meeting-creating',
                     },
                     url
                 };

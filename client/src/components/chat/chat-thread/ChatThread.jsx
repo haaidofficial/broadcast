@@ -9,12 +9,34 @@ import "./index.css";
 
 export function ChatThread() {
   const { newMessage } = useSocketContext();
+  const [messageList, setMessageList] = useState([]);
+
+
+  useEffect(() => {
+    if (newMessage.message) {
+      addMessagesInsideChatThread(newMessage)
+    }
+  }, [newMessage]);
+
+
+  function addMessagesInsideChatThread(data) {
+    setMessageList(prevstate => ([...prevstate, data]));
+  }
+
+
+  console.log(messageList, 'messageList');
+
+
+  const displayUsersMessages = messageList.map((message, index) => {
+    return <UserChatBox key={index} data={message} />
+  });
+
 
   return (
     <>
       <div className="chat-container-child">
         <div className="chat-list-container">
-          {newMessage.message && <UserChatBox message={newMessage.message} />}
+          {displayUsersMessages}
         </div>
         <div className="chat-message-input-container">
           <div className="chat-message-input">

@@ -23,9 +23,11 @@ function initSocket(httpServer) {
     });
 
     socket.on("send_message_inside_meeting", (data) => {
-      const { meetingId, event, message } = data;
+      const { meetingId, event, message, user } = data;
       io.to(meetingId).emit(socketEventsConstants.NEW_MESSAGE_IN_MEETING, {
-        message
+        message,
+        user,
+        dateTime: new Date().toLocaleString()
       });
       console.log(data);
     });

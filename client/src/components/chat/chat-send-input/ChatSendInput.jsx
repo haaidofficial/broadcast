@@ -6,7 +6,7 @@ import { useSocketContext } from "../../../contexts/socket-context";
 import "./index.css";
 
 export function ChatSendInputBox() {
-    const { sendMessageInsideMeeting } = useSocketContext();
+    const { sendMessageInsideMeeting, userRef } = useSocketContext();
     const [chatMessage, setChatMessage] = useState("");
     const historyState = window.history.state;
 
@@ -24,6 +24,7 @@ export function ChatSendInputBox() {
             const { meetingId } = historyState;
             const payload = {
                 meetingId,
+                user: userRef.current,
                 event: "send_message_inside_meeting",
                 message: chatMessage
             };

@@ -7,6 +7,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
 import { windowHistoryApi } from '../../../services/windowHistoryApi';
 import { useRouterContext } from '../../../contexts/route-context';
 
@@ -14,6 +15,7 @@ import { useRouterContext } from '../../../contexts/route-context';
 export function MeetingDialog({ createMeetingDialogProps }) {
     const { isOpen, meetingId, dialogContentText, dialogTitle } = createMeetingDialogProps;
     const [open, setOpen] = React.useState(false);
+    const [userName, setUserName] = React.useState('');
     const { updateComponentView } = useRouterContext();
 
     React.useEffect(() => {
@@ -36,13 +38,21 @@ export function MeetingDialog({ createMeetingDialogProps }) {
         const data = {
             state: {
                 meetingId,
-                action: 'join-meeting-after-meeting-creating'
+                action: 'join-meeting-after-meeting-creating',
+                user: {
+                    userName
+                }
             },
             url
         };
 
         windowHistoryApi(data);
         updateComponentView('?meetingId=' + meetingId);
+    }
+
+
+    function handleChange(ev) {
+        setUserName(ev.target.value.trim());
     }
 
 
@@ -67,8 +77,17 @@ export function MeetingDialog({ createMeetingDialogProps }) {
                             <Box sx={{ background: 'rgb(241,243,244)', width: '100%', padding: '10px 0', textAlign: 'center' }}>
                                 {meetingId}
                             </Box>
-                            <Box>
-
+                            <Box className='join-meeting-username-container'>
+                                <div className='join-meeting-username'>
+                                    <TextField
+                                        required
+                                        id="filled-required"
+                                        label="Enter name"
+                                        variant="filled"
+                                        value={userName}
+                                        onChange={handleChange}
+                                    />
+                                </div>
                             </Box>
                         </Stack>
                     </Box>
