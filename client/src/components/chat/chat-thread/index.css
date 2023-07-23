@@ -4,5 +4,33 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    padding-left: 10px;
+}
 
+
+.chat-list-container {
+    height: 750px;
+    overflow-y: scroll;
+    padding-right: 9px;
+}
+
+
+.chat-list-container::-webkit-scrollbar {
+    width: 10px;
+    height: 5px;
+    background-color: #ffffff17;
+}
+
+.chat-list-container::-webkit-scrollbar-thumb {
+    background-color: #9b9b9bb0;
+    border: 3px;
+    background-clip: content-box;
+}
+
+
+
+@media screen and (max-height: 800px) {
+    .chat-list-container {
+        height: 655px;
+    }
 }

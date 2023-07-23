@@ -8,23 +8,26 @@ const SocketContext = createContext();
 const socket = io(serverConstants.SERVER_BASE_URL);
 
 export function SocketContextProvider({ children }) {
+  const [isMeetingCreated, setIsMeetingCreated] = useState('idle');
   const [meetingAlert, setMeetingAlert] = useState({
     action: "",
     isVisible: false,
     severity: ""
   });
 
-  const [newMessage, setNewMessage] = useState({ message: "", user: { userId: '', username: '' } });
+  const [newMessage, setNewMessage] = useState({
+    message: "",
+    user: { userId: "", username: "" }
+  });
 
   const meetingIdRef = useRef("");
-  const userRef = useRef({ userId: '', username: '', });
+  const userRef = useRef({ userId: "", username: "" });
 
   useEffect(() => {
-    userRef.current = createUser();
     listToNewMessageInMeeting();
   }, []);
 
-  function createMeeting(existingMeetingId) {
+  function createMeeting(existingMeetingId, username) {
     return new Promise((resolve, reject) => {
       let meetingId = "";
       if (existingMeetingId) {
@@ -32,10 +35,14 @@ export function SocketContextProvider({ children }) {
       } else {
         meetingId = UUIDV4();
       }
+      console.log(userRef.current, 'userRef.current');
+      debugger
 
-      socket.emit(socketEventsConstants.CREATE_MEETING, { meetingId });
+      userRef.current = createUser(username);
+      socket.emit(socketEventsConstants.CREATE_MEETING, { meetingId, userId: userRef.current.userId, username: userRef.current.username });
 
       socket.on(socketEventsConstants.MEETING_CREATED, () => {
+
         resolve({
           action: socketEventsConstants.MEETING_CREATED,
           isVisible: true,
@@ -68,16 +75,61 @@ export function SocketContextProvider({ children }) {
     socket.on("new_message_in_meeting", insertMessageInChatState);
   }
 
-  function createUser() {
-
+  function createUser(username) {
+    debugger
     const user = {
-      userId: UUIDV4(),
-      username: '',
+      userId: '',
+      username: ''
+    };
+
+    const userFromLocalStorage = window.localStorage.getItem('MEETING_USER_ID');
+
+    if (window.localStorage.getItem('MEETING_USER_ID') === null) {
+      user.userId = UUIDV4();
+      user.username = username;
+      window.localStorage.setItem('MEETING_USER_ID', JSON.stringify(user));
+    }
+    else {
+      const { userId, username } = JSON.parse(userFromLocalStorage);
+      user.userId = userId;
+      user.username = username;
     }
 
     return user;
+  }
+
+
+  function removeUserFromLocalStorage(userId) {
+    debugger;
+    const userFromLocalStorage = window.localStorage.getItem('MEETING_USER_ID');
+
+
+    if (userFromLocalStorage !== null) {
+      if (JSON.parse(userFromLocalStorage).userId === userId) {
+        window.localStorage.removeItem('MEETING_USER_ID');
+      }
+    }
 
   }
+
+
+  function removeUserFromMeeting({ userId, meetingId }) {
+    debugger
+    removeUserFromLocalStorage(userId);
+
+    return new Promise((resolve, reject) => {
+      socket.emit('remove_user_from_meeting', { userId, meetingId });
+      socket.on('user-removed-from-meeting', (data) => {
+        const { status, userId, meetingId } = data;
+        resolve({
+          status,
+          userId,
+          meetingId
+        });
+      });
+    });
+  }
+
 
   const contextProviderValues = {
     createMeeting,
@@ -86,7 +138,11 @@ export function SocketContextProvider({ children }) {
     listToNewMessageInMeeting,
     newMessage,
     meetingIdRef,
-    userRef
+    userRef,
+    createUser,
+    removeUserFromMeeting,
+    isMeetingCreated,
+    setIsMeetingCreated
   };
 
   return (

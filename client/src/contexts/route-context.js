@@ -8,6 +8,13 @@ export function RouterContextProvider({ children }) {
     const [component, setComponent] = useState({ url: window.location.search });
 
 
+    useEffect(() => {
+
+        console.log(window.location.search);
+
+    }, [window.location.search]);
+
+
 
     function updateComponentView(url) {
         setComponent({ url });

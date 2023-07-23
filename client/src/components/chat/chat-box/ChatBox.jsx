@@ -17,7 +17,7 @@ export function UserChatBox({ data }) {
         <>
             <div className={(isRemoteUser === true) ? 'chat-box chat-box-left' : 'chat-box chat-box-right'}>
                 <div className='chat-box-username'>
-                    <span>{'Haaid rehman'}</span>
+                    <span>{username}</span>
                 </div>
                 <div className='chat-box-datetime'>
                     <span>{dateTime}</span>

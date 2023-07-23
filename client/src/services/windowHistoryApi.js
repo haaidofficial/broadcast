@@ -4,3 +4,7 @@ export function windowHistoryApi(data) {
 }
 
 
+export function windowHistoryRemoveState(data) {
+    const {state, key, url} = data;
+    window.history.replaceState(state, key, url)
+}

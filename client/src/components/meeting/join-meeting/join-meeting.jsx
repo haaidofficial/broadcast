@@ -1,26 +1,50 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import './index.css';
+import * as React from "react";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import Stack from "@mui/material/Stack";
+import Button from "@mui/material/Button";
+import { styled } from "@mui/material/styles";
+import "./index.css";
+
+const WhiteBorderTextField = styled(TextField)`
+  & label.Mui-focused {
+    color: white;
+  }
+  & .MuiOutlinedInput-root {
+    &.Mui-focused fieldset {
+      border-color: white;
+    }
+  }
+`;
+
+console.log(WhiteBorderTextField);
 
 export function JoinMeeting() {
-    return (
-        <>
-            <Box
-                component="form"
-                sx={{
-                    '& > :not(style)': { m: 1, width: '40ch' },
-                }}
-                noValidate
-                autoComplete="off"
-            >
-                <Stack spacing={2} direction="row">
-                    <TextField id="enter-meeting-code" label="enter meeting code" variant="outlined" className='join-meeting' size='small' sx={{ height: '10px' }} />
-                    <Button variant="text" sx={{ color: '#6a6e74' }}>Join</Button>
-                </Stack>
-            </Box>
-        </>
-    );
+  return (
+    <>
+      <Box
+        component="form"
+        sx={{
+          "& > :not(style)": { m: 1, width: "40ch" }
+        }}
+        noValidate
+        autoComplete="off"
+      >
+        <Stack spacing={2} direction="row">
+          <WhiteBorderTextField
+            id="enter-meeting-code"
+            label="enter meeting code"
+            variant="outlined"
+            className="join-meeting"
+            size="small"
+            sx={{ height: "10px" }}
+            inputProps={{ style: { border: "1px solid white" } }}
+          />
+          <Button variant="text" sx={{ color: "#6a6e74" }}>
+            Join
+          </Button>
+        </Stack>
+      </Box>
+    </>
+  );
 }

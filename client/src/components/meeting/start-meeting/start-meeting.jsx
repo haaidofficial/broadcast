@@ -14,6 +14,8 @@ const infoTexts = {
 };
 
 export function StartMeeting() {
+  const [meetingDialogOpen, setMeetingDialogOpen] = React.useState(false);
+
   const [meetingAlert, setMeetingAlert] = React.useState({
     action: "",
     isVisible: false,
@@ -27,6 +29,15 @@ export function StartMeeting() {
 
   function sendMessage() {
     io.sockets.in(2023).emit("new-message", "Hello everyone");
+  }
+
+
+  function handleDialog(params) {
+    let isOpen = false;
+    if (params === 'open') {
+      isOpen = true;
+    }
+    setMeetingDialogOpen(isOpen);
   }
 
   async function handleCreateMeeting() {
@@ -70,7 +81,12 @@ export function StartMeeting() {
     isOpen: meetingAlert.isVisible,
     meetingId: meetingIdInfo,
     dialogContentText: infoTexts.dialogContentText,
-    dialogTitle: infoTexts.dialogTitle
+    dialogTitle: infoTexts.dialogTitle,
+    meetingDialogOpen,
+    setMeetingDialogOpen,
+    setMeetingAlert,
+    setMeetingIdInfo,
+    meetingIdInfo
   };
 
   return (
@@ -78,7 +94,8 @@ export function StartMeeting() {
       <Button
         variant="contained"
         startIcon={<VideocamOutlinedIcon fontSize="inherit" />}
-        onClick={handleCreateMeeting}
+        // onClick={handleCreateMeeting}
+        onClick={() => handleDialog('open')}
       >
         Start a meeting
       </Button>
