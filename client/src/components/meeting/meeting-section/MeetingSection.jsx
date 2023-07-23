@@ -8,7 +8,15 @@ import { MeetingControlPanel } from "../meeting-control-panel/MeetingControlPane
 import { windowHistoryApi } from "../../../services/windowHistoryApi";
 import { useSocketContext } from "../../../contexts/socket-context";
 import { ParticipantJoinMeetingDialog } from "../../dialogs/meeting-dialog/ParticipantJoinMeetingDialog";
+import { TabParticipantTab } from "../chat-participant-tab/TabParticipantTab";
+import { ParticipantList } from "../participant-list/ParticipantList";
 import "./index.css";
+
+
+const tabDrivenComponent = {
+  chat: <Chat />,
+  participant: <ParticipantList />
+}
 
 export function MeetingSection() {
   console.log('MeetingSection');
@@ -16,6 +24,7 @@ export function MeetingSection() {
   const [meetingInfo, setMeetingInfo] = useState({ status: '', participantUsername: '' });
   const [meetingDialogOpen, setMeetingDialogOpen] = useState(false);
   const urlSearchParams = new URLSearchParams(window.location.search);
+  const [tab, setTab] = useState('chat');
 
 
 
@@ -78,7 +87,7 @@ export function MeetingSection() {
     else if (meetingInfo.status === 'participant-username-created') {
       joinParticipantInMeeting(meetingInfo.participantUsername);
     }
- 
+
   }, [meetingInfo.status]);
 
 
@@ -153,9 +162,21 @@ export function MeetingSection() {
 
 
   function handleRemoveUserFromMeeting(e) {
-    e.preventDefault();
-    e.returnValue = '';
+    // e.preventDefault();
+    // e.returnValue = '';
   }
+
+
+  function renderComponentUsingTab() {
+    return tabDrivenComponent[tab];
+  }
+
+
+  function updateTabs(value) {
+    setTab(value);
+  }
+
+
 
   return (
     <>
@@ -166,12 +187,15 @@ export function MeetingSection() {
               ?
               <ParticipantJoinMeetingDialog createMeetingDialogProps={createMeetingDialogProps} />
               :
-              <Grid container>
-                <VideoSectionMain>
-                  <MeetingControlPanel />
-                </VideoSectionMain>
-                <Chat />
-              </Grid>
+              <>
+                <TabParticipantTab updateTabs={updateTabs} />
+                <Grid container>
+                  <VideoSectionMain>
+                    <MeetingControlPanel />
+                  </VideoSectionMain>
+                  {renderComponentUsingTab()}
+                </Grid>
+              </>
           }
 
         </Container>

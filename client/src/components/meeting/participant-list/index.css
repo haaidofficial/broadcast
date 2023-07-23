@@ -1,0 +1,14 @@
+.participant-list{
+    height: 100%;
+}
+
+
+.participant-list-container{
+    height: 100%;
+}
+
+.participant-list-wrapper{
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+}

@@ -14,7 +14,7 @@ import { windowHistoryRemoveState } from '../../../services/windowHistoryApi';
 
 
 export function LeaveMeetingDialog({ leaveMeetingDialogProps }) {
-    const { removeUserFromMeeting, userRef, meetingIdRef } = useSocketContext();
+    const { removeUserFromMeeting, userRef, meetingIdRef, setIsMeetingCreated } = useSocketContext();
     const { updateComponentView } = useRouterContext();
     const { leaveMeetingDialogOpen, setLeaveMeetingDialogOpen } = leaveMeetingDialogProps;
     const [open, setOpen] = React.useState(false);
@@ -45,6 +45,7 @@ export function LeaveMeetingDialog({ leaveMeetingDialogProps }) {
         try {
             const { status, userId, meetingId } = await removeUserFromMeeting(params);
             if (status === 'user-removed') {
+                setIsMeetingCreated('idle');
                 windowHistoryRemoveState({ state: null, key: null, url: '/' });
                 updateComponentView('/');
             }

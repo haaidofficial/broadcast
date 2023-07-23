@@ -1,0 +1,12 @@
+.chat-participant-tab {
+    position: absolute;
+    right: 10px;
+    top: 8px;
+}
+
+.tab-active {
+    background: #758283 !important;
+    /* background: #B9345A !important; */
+    /* background: #207398 !important; */
+    color: white !important;
+}

@@ -32,7 +32,7 @@ export function MeetingDialog({ createMeetingDialogProps }) {
     };
 
     const handleClose = () => {
-        // setMeetingDialogOpen(false);
+        setMeetingDialogOpen(false);
     };
 
 
