@@ -35,7 +35,6 @@ export function LeaveMeetingDialog({ leaveMeetingDialogProps }) {
     };
 
     async function handleLeaveMeeting() {
-        debugger
         const params = {
             userId: userRef.current.userId,
             meetingId: meetingIdRef.current

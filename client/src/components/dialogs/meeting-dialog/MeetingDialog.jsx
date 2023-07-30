@@ -39,7 +39,7 @@ export function MeetingDialog({ createMeetingDialogProps }) {
     async function handleStartMeeting() {
 
         try {
-            const { action, isVisible, severity, message, meetingId } = await createMeeting("", userName);
+            const { action, isVisible, severity, message, meetingId } = await createMeeting("", userName, 'organiser');
 
             setMeetingAlert({
                 action,

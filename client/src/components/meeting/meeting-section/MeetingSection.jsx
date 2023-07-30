@@ -10,34 +10,32 @@ import { useSocketContext } from "../../../contexts/socket-context";
 import { ParticipantJoinMeetingDialog } from "../../dialogs/meeting-dialog/ParticipantJoinMeetingDialog";
 import { TabParticipantTab } from "../chat-participant-tab/TabParticipantTab";
 import { ParticipantList } from "../participant-list/ParticipantList";
+import { UserMediaProvider } from "../../../contexts/user-media-context";
 import "./index.css";
-
 
 const tabDrivenComponent = {
   chat: <Chat />,
   participant: <ParticipantList />
-}
+};
 
 export function MeetingSection() {
-  console.log('MeetingSection');
+  console.log("MeetingSection");
   const { createMeeting, meetingIdRef, createUser } = useSocketContext();
-  const [meetingInfo, setMeetingInfo] = useState({ status: '', participantUsername: '' });
+  const [meetingInfo, setMeetingInfo] = useState({
+    status: "",
+    participantUsername: ""
+  });
   const [meetingDialogOpen, setMeetingDialogOpen] = useState(false);
   const urlSearchParams = new URLSearchParams(window.location.search);
-  const [tab, setTab] = useState('chat');
-
-
+  const [tab, setTab] = useState("chat");
 
   useEffect(() => {
-
-
-
+    debugger
     // const historyState = window.history.state;
     // if (historyState != null) {
     //   if (historyState.meetingId) {
     //     const existingMeetingId = historyState.meetingId;
     //     const username = historyState.user.username;
-
 
     //   }
     // }
@@ -45,17 +43,15 @@ export function MeetingSection() {
     popupAlertWhenUserReloadsPage();
 
     if (urlSearchParams.has("meetingId") && urlSearchParams.get("meetingId")) {
-      if (urlSearchParams.has("action") && urlSearchParams.get("action")) {
+      if (urlSearchParams.has("action") && urlSearchParams.get("action") === 'joinMeeting') {
         const historyState = window.history.state;
         if (historyState != null) {
-          if (historyState.user.info === 'participant') {
-            handleCreateMeeting()
-          }
-          else {
+          if (historyState.user.info === "participant") {
+            handleCreateMeeting('participant');
+          } else {
             openModalParticipantJoin();
           }
-        }
-        else {
+        } else {
           openModalParticipantJoin();
         }
 
@@ -71,58 +67,51 @@ export function MeetingSection() {
         // };
 
         // windowHistoryApi(data);
-      }
-      else {
-        handleCreateMeeting();
+      } else {
+        handleCreateMeeting('organiser');
       }
     }
   }, []);
 
-
-
   useEffect(() => {
-    if (meetingInfo.status === 'open-modal-to-join-participant') {
+    if (meetingInfo.status === "open-modal-to-join-participant") {
       setMeetingDialogOpen(true);
-    }
-    else if (meetingInfo.status === 'participant-username-created') {
+    } else if (meetingInfo.status === "participant-username-created") {
       joinParticipantInMeeting(meetingInfo.participantUsername);
     }
-
   }, [meetingInfo.status]);
 
-
-  async function handleCreateMeeting() {
-    debugger
+  async function handleCreateMeeting(userType) {
+    debugger;
     const historyState = window.history.state;
     if (historyState != null) {
       if (historyState.meetingId) {
-
         const existingMeetingId = historyState.meetingId;
         const username = historyState.user.username;
-        const { message } = await createMeeting(existingMeetingId, username);
+        const { message } = await createMeeting(existingMeetingId, username, userType);
 
         meetingIdRef.current = existingMeetingId;
       }
     }
   }
 
-
-
   function openModalParticipantJoin() {
-
-    setMeetingInfo({ status: 'open-modal-to-join-participant', participantUsername: '' });
+    setMeetingInfo({
+      status: "open-modal-to-join-participant",
+      participantUsername: ""
+    });
   }
-
 
   function participantJoined() {
-    setMeetingInfo(prevstate => ({ status: 'participant-joined-meeting' }));
+    setMeetingInfo((prevstate) => ({ status: "participant-joined-meeting" }));
   }
-
 
   function setParticipantUserName(username) {
-    setMeetingInfo({ status: 'participant-username-created', participantUsername: username });
+    setMeetingInfo({
+      status: "participant-username-created",
+      participantUsername: username
+    });
   }
-
 
   function joinParticipantInMeeting(username) {
     const url = window.location.href;
@@ -133,21 +122,21 @@ export function MeetingSection() {
         action: "join-meeting-after-meeting-creating",
         user: {
           username: username,
-          info: 'participant'
+          info: "participant"
         }
       },
       url
     };
 
     windowHistoryApi(data);
-    handleCreateMeeting();
+    handleCreateMeeting('participant');
   }
 
   console.log(meetingInfo);
 
   const createMeetingDialogProps = {
-    dialogContentText: 'Join Meeting',
-    dialogTitle: '',
+    dialogContentText: "Join Meeting",
+    dialogTitle: "",
     meetingDialogOpen,
     setMeetingDialogOpen,
     participantJoined,
@@ -157,47 +146,43 @@ export function MeetingSection() {
   };
 
   function popupAlertWhenUserReloadsPage() {
-    window.addEventListener('beforeunload', handleRemoveUserFromMeeting);
+    window.addEventListener("beforeunload", handleRemoveUserFromMeeting);
   }
-
 
   function handleRemoveUserFromMeeting(e) {
     // e.preventDefault();
     // e.returnValue = '';
   }
 
-
   function renderComponentUsingTab() {
     return tabDrivenComponent[tab];
   }
-
 
   function updateTabs(value) {
     setTab(value);
   }
 
-
-
   return (
     <>
       <Box className="bg-dark">
         <Container maxWidth="xl">
-          {
-            meetingInfo.status === 'open-modal-to-join-participant'
-              ?
-              <ParticipantJoinMeetingDialog createMeetingDialogProps={createMeetingDialogProps} />
-              :
-              <>
-                <TabParticipantTab updateTabs={updateTabs} />
-                <Grid container>
+          {meetingInfo.status === "open-modal-to-join-participant" ? (
+            <ParticipantJoinMeetingDialog
+              createMeetingDialogProps={createMeetingDialogProps}
+            />
+          ) : (
+            <>
+              <TabParticipantTab updateTabs={updateTabs} />
+              <Grid container>
+                <UserMediaProvider>
                   <VideoSectionMain>
                     <MeetingControlPanel />
                   </VideoSectionMain>
-                  {renderComponentUsingTab()}
-                </Grid>
-              </>
-          }
-
+                </UserMediaProvider>
+                {renderComponentUsingTab()}
+              </Grid>
+            </>
+          )}
         </Container>
       </Box>
     </>

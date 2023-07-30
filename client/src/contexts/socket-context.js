@@ -3,12 +3,14 @@ import { io } from "socket.io-client";
 import { v4 as UUIDV4 } from "uuid";
 import { serverConstants } from "../constants/server-constants";
 import { socketEventsConstants } from "../constants/socket-event-constants";
+import { initPeerConnection } from "../services/RTCPeerConnection";
+
 
 const SocketContext = createContext();
 const socket = io(serverConstants.SERVER_BASE_URL);
 
 export function SocketContextProvider({ children }) {
-  const [isMeetingCreated, setIsMeetingCreated] = useState('idle');
+  const [isMeetingCreated, setIsMeetingCreated] = useState("idle");
   const [meetingAlert, setMeetingAlert] = useState({
     action: "",
     isVisible: false,
@@ -20,14 +22,46 @@ export function SocketContextProvider({ children }) {
     user: { userId: "", username: "" }
   });
 
+  const [messageList, setMessageList] = useState([]);
+  const [participantList, setParticipantList] = useState([]);
+
   const meetingIdRef = useRef("");
   const userRef = useRef({ userId: "", username: "" });
+  const peerConnectionRef = useRef({
+    peer: "",
+    peerId: ""
+  });
 
   useEffect(() => {
     listToNewMessageInMeeting();
+
+    // socket.on('new_offer', (data) => {
+    //   console.log(data);
+
+    //   const connection = new RTCPeerConnection();
+
+    //   connection.addTrack()
+
+    //   connection.setRemoteDescription()
+
+    // });
   }, []);
 
-  function createMeeting(existingMeetingId, username) {
+  // useEffect(() => {
+  //   if (isMeetingCreated === "meeting-created") {
+  //     console.log("dafhjkfagffgk");
+  //     handlePeerConnection();
+  //   }
+  // }, [isMeetingCreated]);
+
+  useEffect(() => {
+    if (newMessage.message) {
+      addMessagesInsideChatList(newMessage);
+    }
+  }, [newMessage]);
+
+  function createMeeting(existingMeetingId, username, userType) {
+    debugger
     return new Promise((resolve, reject) => {
       let meetingId = "";
       if (existingMeetingId) {
@@ -35,23 +69,37 @@ export function SocketContextProvider({ children }) {
       } else {
         meetingId = UUIDV4();
       }
-      console.log(userRef.current, 'userRef.current');
-      debugger
+      console.log(userRef.current, "userRef.current");
 
       userRef.current = createUser(username);
-      socket.emit(socketEventsConstants.CREATE_MEETING, { meetingId, userId: userRef.current.userId, username: userRef.current.username });
+      socket.emit(socketEventsConstants.CREATE_MEETING, {
+        meetingId,
+        userId: userRef.current.userId,
+        username: userRef.current.username,
+        userType
+      });
 
-      socket.on(socketEventsConstants.MEETING_CREATED, () => {
+      socket.on(socketEventsConstants.MEETING_CREATED, (data) => {
+        if (data.status === "meeting-created") {
+          debugger
+          handlePeerConnection();
+          resolve({
+            action: socketEventsConstants.MEETING_CREATED,
+            isVisible: true,
+            message: "Meeting created successfully",
+            severity: "success",
+            meetingId
+          });
+        }
+        console.log(data, "meeting");
+        //setIsMeetingCreated
+        // handlePeerConnection();
 
-        resolve({
-          action: socketEventsConstants.MEETING_CREATED,
-          isVisible: true,
-          message: "Meeting created successfully",
-          severity: "success",
-          meetingId
-        });
         // setMeetingAlert(prevState => ({ action: socketEventsConstants.MEETING_CREATED, isVisible: true, message: 'Meeting created successfully', severity: 'success' }));
         // console.log('Meeting created');
+
+
+
       });
     });
   }
@@ -76,20 +124,18 @@ export function SocketContextProvider({ children }) {
   }
 
   function createUser(username) {
-    debugger
     const user = {
-      userId: '',
-      username: ''
+      userId: "",
+      username: ""
     };
 
-    const userFromLocalStorage = window.localStorage.getItem('MEETING_USER_ID');
+    const userFromLocalStorage = window.localStorage.getItem("MEETING_USER_ID");
 
-    if (window.localStorage.getItem('MEETING_USER_ID') === null) {
+    if (window.localStorage.getItem("MEETING_USER_ID") === null) {
       user.userId = UUIDV4();
       user.username = username;
-      window.localStorage.setItem('MEETING_USER_ID', JSON.stringify(user));
-    }
-    else {
+      window.localStorage.setItem("MEETING_USER_ID", JSON.stringify(user));
+    } else {
       const { userId, username } = JSON.parse(userFromLocalStorage);
       user.userId = userId;
       user.username = username;
@@ -98,28 +144,22 @@ export function SocketContextProvider({ children }) {
     return user;
   }
 
-
   function removeUserFromLocalStorage(userId) {
-    debugger;
-    const userFromLocalStorage = window.localStorage.getItem('MEETING_USER_ID');
-
+    const userFromLocalStorage = window.localStorage.getItem("MEETING_USER_ID");
 
     if (userFromLocalStorage !== null) {
       if (JSON.parse(userFromLocalStorage).userId === userId) {
-        window.localStorage.removeItem('MEETING_USER_ID');
+        window.localStorage.removeItem("MEETING_USER_ID");
       }
     }
-
   }
 
-
   function removeUserFromMeeting({ userId, meetingId }) {
-    debugger
     removeUserFromLocalStorage(userId);
 
     return new Promise((resolve, reject) => {
-      socket.emit('remove_user_from_meeting', { userId, meetingId });
-      socket.on('user-removed-from-meeting', (data) => {
+      socket.emit("remove_user_from_meeting", { userId, meetingId });
+      socket.on("user-removed-from-meeting", (data) => {
         const { status, userId, meetingId } = data;
         resolve({
           status,
@@ -129,6 +169,50 @@ export function SocketContextProvider({ children }) {
       });
     });
   }
+
+  function addMessagesInsideChatList(data) {
+    setMessageList((prevstate) => [...prevstate, data]);
+  }
+
+  async function handlePeerConnection() {
+    debugger
+    try {
+      const { peer, peerId } = await initPeerConnection();
+      peerConnectionRef.current = { peer, peerId };
+      insertPeerIdInsideMeeting();
+
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  function insertPeerIdInsideMeeting() {
+    debugger
+    const { peerId } = peerConnectionRef.current;
+    socket.emit("insert_peer_connection_new_user", {
+      peerId,
+      meetingId: meetingIdRef.current,
+      user: userRef.current
+    });
+
+
+
+    function addConnectedParticipantList(list) {
+      setParticipantList(list);
+    }
+
+
+
+    socket.on('new_participant_joined', (data) => {
+      console.log('new_participant_joined', data);
+      addConnectedParticipantList(data.participantList);
+    });
+
+  }
+
+
+
+
 
 
   const contextProviderValues = {
@@ -142,7 +226,10 @@ export function SocketContextProvider({ children }) {
     createUser,
     removeUserFromMeeting,
     isMeetingCreated,
-    setIsMeetingCreated
+    setIsMeetingCreated,
+    messageList,
+    participantList,
+    socket
   };
 
   return (
