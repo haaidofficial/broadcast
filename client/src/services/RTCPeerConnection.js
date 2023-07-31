@@ -38,8 +38,35 @@ export function initPeerConnection() {
     // console.log(peer, connection);
 }
 
-export function streamMediaUsingPeerConnection(stream, peer, peerId) {
-    
+export function streamMediaUsingCall(stream, peer, peerIdArray) {
+
+    peerIdArray.forEach(user => {
+        debugger
+        const call = peer.call(user.peerId, stream);
+        console.log(call, '_stream');
+
+        call.on('stream', (_stream) => {
+            console.log(_stream, '_stream');
+        });
+
+
+    });
+
+    console.log(stream, peer, peerIdArray);
+
+
+}
+
+
+
+export function listenAndAnswerIncomingCall(stream, peer) {
+    peer.on('call', (call) => {
+        call.answer(stream);
+
+        call.on('stream', (stream) => {
+            console.log(stream);
+        });
+    });
 }
 
 

@@ -229,7 +229,8 @@ export function SocketContextProvider({ children }) {
     setIsMeetingCreated,
     messageList,
     participantList,
-    socket
+    socket,
+    peerConnectionRef
   };
 
   return (
