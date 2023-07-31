@@ -41,12 +41,12 @@ export function initPeerConnection() {
 export function streamMediaUsingCall(stream, peer, peerIdArray) {
 
     peerIdArray.forEach(user => {
-        debugger
+        // debugger
         const call = peer.call(user.peerId, stream);
-        console.log(call, '_stream');
+        console.log(call, 'remote video');
 
         call.on('stream', (_stream) => {
-            console.log(_stream, '_stream');
+            // console.log(_stream, '_stream');
         });
 
 
@@ -64,7 +64,7 @@ export function listenAndAnswerIncomingCall(stream, peer) {
         call.answer(stream);
 
         call.on('stream', (stream) => {
-            console.log(stream);
+            console.log(stream, 'remote video');
         });
     });
 }
@@ -99,7 +99,7 @@ export function initRemotePeerConnection(
             remoteConnection.setLocalDescription(sdp);
         })
         .then(() => {
-            debugger;
+            // debugger;
             socket.emit("answer", {
                 rc: remoteConnection.localDescription,
                 meetingId

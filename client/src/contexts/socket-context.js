@@ -61,7 +61,7 @@ export function SocketContextProvider({ children }) {
   }, [newMessage]);
 
   function createMeeting(existingMeetingId, username, userType) {
-    debugger
+    // debugger
     return new Promise((resolve, reject) => {
       let meetingId = "";
       if (existingMeetingId) {
@@ -81,7 +81,7 @@ export function SocketContextProvider({ children }) {
 
       socket.on(socketEventsConstants.MEETING_CREATED, (data) => {
         if (data.status === "meeting-created") {
-          debugger
+          // debugger
           handlePeerConnection();
           resolve({
             action: socketEventsConstants.MEETING_CREATED,
@@ -175,7 +175,7 @@ export function SocketContextProvider({ children }) {
   }
 
   async function handlePeerConnection() {
-    debugger
+    // debugger
     try {
       const { peer, peerId } = await initPeerConnection();
       peerConnectionRef.current = { peer, peerId };
@@ -187,7 +187,7 @@ export function SocketContextProvider({ children }) {
   }
 
   function insertPeerIdInsideMeeting() {
-    debugger
+    // debugger
     const { peerId } = peerConnectionRef.current;
     socket.emit("insert_peer_connection_new_user", {
       peerId,

@@ -30,7 +30,7 @@ export function MeetingSection() {
   const [tab, setTab] = useState("chat");
 
   useEffect(() => {
-    debugger
+    // debugger
     // const historyState = window.history.state;
     // if (historyState != null) {
     //   if (historyState.meetingId) {
@@ -82,7 +82,7 @@ export function MeetingSection() {
   }, [meetingInfo.status]);
 
   async function handleCreateMeeting(userType) {
-    debugger;
+    // debugger;
     const historyState = window.history.state;
     if (historyState != null) {
       if (historyState.meetingId) {
