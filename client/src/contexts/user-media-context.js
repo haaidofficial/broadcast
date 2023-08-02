@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useRef, useEffect } from "react";
 import { localMediaStream } from "../services/localMediaStream";
-import { initPeerConnection, initRemotePeerConnection, streamMediaUsingCall, listenAndAnswerIncomingCall } from "../services/RTCPeerConnection";
+import { initPeerConnection, initRemotePeerConnection, streamMediaUsingCall, listenAndAnswerIncomingCall, connectToNewUserUsingPeer } from "../services/RTCPeerConnection";
 import { useSocketContext } from "./socket-context";
 
 const UserMediaContext = createContext();
@@ -9,7 +9,7 @@ export function UserMediaProvider({ children }) {
     const streamRef = useRef(null);
     const [videoStreamState, setVideoStreamState] = useState({ audio: false, video: false, action: '' });
     const [videoVolume, setVideoVolume] = useState(true);
-    const { meetingIdRef, socket, participantList, peerConnectionRef } = useSocketContext();
+    const { meetingIdRef, socket, participantList, peerConnectionRef,newJoineePeerId } = useSocketContext();
 
 
     // useEffect(async () => {
@@ -35,20 +35,35 @@ export function UserMediaProvider({ children }) {
     //     }
     // }, [participantList.length]);
 
-    async function startMediaCapture(videoElement) {
+
+    useEffect(() => {
+        startMediaCapture('');
+    });
+
+    useEffect(() => {
+            if(newJoineePeerId){
+                connectToNewUserUsingPeer(streamRef.current, peerConnectionRef.current.peer, newJoineePeerId)
+            }
+    }, [newJoineePeerId]);
+
+
+    async function startMediaCapture(videoElement='') {
         try {
-            streamRef.current = await localMediaStream({ video: true, audio: true });
+            streamRef.current = await localMediaStream({ video: true, audio: !true });
             if (streamRef.current) {
+                const _video = document.getElementById('main-video');
+                _video.style.margin = '10px'
+                _video.srcObject = streamRef.current
+                listenAndAnswerIncomingCall(streamRef.current, peerConnectionRef.current.peer) 
+                // if (participantList.length) {
+                //     const remoteParticipants = participantList.filter(participant => participant.userType !== 'organiser');
+                //     console.log();
+                //     streamMediaUsingCall(streamRef.current, peerConnectionRef.current.peer, remoteParticipants);
+                //     console.log(remoteParticipants, 'participantList');
+                // }
 
-                if (participantList.length) {
-                    const remoteParticipants = participantList.filter(participant => participant.userType !== 'organiser');
-                    console.log();
-                    streamMediaUsingCall(streamRef.current, peerConnectionRef.current.peer, remoteParticipants);
-                    console.log(remoteParticipants, 'participantList');
-                }
 
-
-                listenAndAnswerIncomingCall(streamRef.current, peerConnectionRef.current.peer);
+                // listenAndAnswerIncomingCall(streamRef.current, peerConnectionRef.current.peer);
                 //console.log(participantList, 'participantList');
                 //streamMediaUsingCall();
             }

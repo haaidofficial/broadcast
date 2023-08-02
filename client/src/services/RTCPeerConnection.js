@@ -38,6 +38,53 @@ export function initPeerConnection() {
     // console.log(peer, connection);
 }
 
+
+export function connectToNewUserUsingPeer(stream, peer, peerId) {
+    debugger
+    const call = peer.call(peerId, stream);
+
+    call.on('stream', (remoteStream) => {
+        console.log('remoteStream', remoteStream);
+        const video = document.createElement('video');
+        video.srcObject = remoteStream;
+        video.addEventListener('loadedmetadata', () => {
+            video.play()
+        })
+        video.style.position = 'absolute';
+        video.style.width = '200px';
+        video.style.height = '200px';
+        video.style.background = 'green';
+        video.style.margin = '20px';
+
+        document.body.append(video);
+
+    });
+}
+
+
+
+
+
+export function listenAndAnswerIncomingCall(stream, peer) {
+    debugger
+    peer.on('call', (call) => {
+        call.answer(stream);
+        
+        debugger
+        call.on('stream', (remoteStream) => {
+            console.log('remoteStream', remoteStream);
+            const video = document.createElement('video');
+            video.srcObject = remoteStream;
+            video.addEventListener('loadmetadata', () => {
+                video.play();
+            });
+            
+            document.body.append(video);
+        });
+    });
+}
+
+
 export function streamMediaUsingCall(stream, peer, peerIdArray) {
 
     peerIdArray.forEach(user => {
@@ -55,18 +102,6 @@ export function streamMediaUsingCall(stream, peer, peerIdArray) {
     console.log(stream, peer, peerIdArray);
 
 
-}
-
-
-
-export function listenAndAnswerIncomingCall(stream, peer) {
-    peer.on('call', (call) => {
-        call.answer(stream);
-
-        call.on('stream', (stream) => {
-            console.log(stream, 'remote video');
-        });
-    });
 }
 
 

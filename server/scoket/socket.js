@@ -76,7 +76,7 @@ function initSocket(httpServer) {
 
       if (result.status && result.userType === 'participant') {
         const participantList = getAllCOnnectedUsersForAMeeting(meetingId);
-        io.to(meetingId).emit('new_participant_joined', { userId, meetingId, participantList });
+        io.to(meetingId).emit('new_participant_joined', { userId, meetingId, participantList, newJoineePeerId: peerId });
       }
     });
 

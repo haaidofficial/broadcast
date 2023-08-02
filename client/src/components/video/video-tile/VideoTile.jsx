@@ -29,7 +29,7 @@ export function VideoTile() {
     <>
       <div className="user-video-container">
         <div className="user-video">
-          <video ref={userVideoRef} autoPlay>
+          <video id="main-video" ref={userVideoRef} autoPlay>
             <source type="video/mp4" />
           </video>
         </div>
