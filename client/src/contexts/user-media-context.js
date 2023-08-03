@@ -1,60 +1,75 @@
 import { createContext, useContext, useState, useRef, useEffect } from "react";
 import { localMediaStream } from "../services/localMediaStream";
-import { initPeerConnection, initRemotePeerConnection, streamMediaUsingCall, listenAndAnswerIncomingCall, connectToNewUserUsingPeer } from "../services/RTCPeerConnection";
+import {
+    initPeerConnection,
+    initRemotePeerConnection,
+    streamMediaUsingCall,
+    listenAndAnswerIncomingCall,
+    connectToNewUserUsingPeer
+} from "../services/RTCPeerConnection";
 import { useSocketContext } from "./socket-context";
 
 const UserMediaContext = createContext();
 
 export function UserMediaProvider({ children }) {
     const streamRef = useRef(null);
-    const [videoStreamState, setVideoStreamState] = useState({ audio: false, video: false, action: '' });
-    const [videoVolume, setVideoVolume] = useState(true);
-    const { meetingIdRef, socket, participantList, peerConnectionRef,newJoineePeerId } = useSocketContext();
-
-
-    // useEffect(async () => {
-    //     try {
-    //         streamRef.current = await localMediaStream({ video: true, audio: true });
-    //         if (streamRef.current) {
-
-    //             //console.log(participantList, 'participantList');
-    //             //streamMediaUsingCall();
-    //         }
-    //     }
-    //     catch (err) {
-    //         console.log(err);
-    //     }
-    // }, []);
-
-    // useEffect(() => {
-    //     if (participantList.length) {
-    //         const remoteParticipants = participantList.filter(participant => participant.userType !== 'organiser');
-    //         console.log();
-    //         streamMediaUsingCall(streamRef.current, peerConnectionRef.current.peer, remoteParticipants);
-    //         console.log(remoteParticipants, 'participantList');
-    //     }
-    // }, [participantList.length]);
-
-
-    useEffect(() => {
-        startMediaCapture('');
+    const [videoStreamState, setVideoStreamState] = useState({
+        audio: false,
+        video: false,
+        action: ""
     });
+    const [videoVolume, setVideoVolume] = useState(true);
+    const {
+        meetingIdRef,
+        socket,
+        participantList,
+        peerConnectionRef,
+        newJoineePeerDetail,
+        peerState,
+        userRef
+    } = useSocketContext();
+    const [meetingLiveStreams, setMeetingLiveStreams] = useState([]);
 
     useEffect(() => {
-            if(newJoineePeerId){
-                connectToNewUserUsingPeer(streamRef.current, peerConnectionRef.current.peer, newJoineePeerId)
-            }
-    }, [newJoineePeerId]);
+        startMediaCapture("");
+    }, []);
 
+    useEffect(() => {
+        debugger;
+        if (peerState && streamRef.current && peerConnectionRef.current.peer) {
+            listenAndAnswerIncomingCall(
+                streamRef.current,
+                peerConnectionRef.current.peer,
+                addLiveVideosToState
+            );
+        }
+        //
+    }, [peerState]);
 
-    async function startMediaCapture(videoElement='') {
+    useEffect(() => {
+        debugger;
+        if (newJoineePeerDetail.peerId && userRef.current && peerConnectionRef.current.peer) {
+            connectToNewUserUsingPeer(
+                streamRef.current,
+                peerConnectionRef.current.peer,
+                // newJoineePeerDetail.peerId,
+                // newJoineePeerDetail.userId,
+                // meetingIdRef.current,
+                addLiveVideosToState
+            );
+        }
+    }, [newJoineePeerDetail.peerId]);
+
+    async function startMediaCapture(videoElement = "") {
+        debugger;
         try {
             streamRef.current = await localMediaStream({ video: true, audio: !true });
             if (streamRef.current) {
-                const _video = document.getElementById('main-video');
-                _video.style.margin = '10px'
-                _video.srcObject = streamRef.current
-                listenAndAnswerIncomingCall(streamRef.current, peerConnectionRef.current.peer) 
+                // const _video = document.getElementById("main-video");
+                // _video.style.margin = "10px";
+                // _video.srcObject = streamRef.current;
+                addLiveVideosToState({ stream: streamRef.current })
+
                 // if (participantList.length) {
                 //     const remoteParticipants = participantList.filter(participant => participant.userType !== 'organiser');
                 //     console.log();
@@ -62,45 +77,68 @@ export function UserMediaProvider({ children }) {
                 //     console.log(remoteParticipants, 'participantList');
                 // }
 
-
                 // listenAndAnswerIncomingCall(streamRef.current, peerConnectionRef.current.peer);
                 //console.log(participantList, 'participantList');
                 //streamMediaUsingCall();
             }
-        }
-        catch (err) {
+        } catch (err) {
             console.log(err);
         }
-
     }
 
     function toggleVideo() {
-        setVideoStreamState(prevstate => ({ ...prevstate, video: !prevstate.video, action: 'video' }));
+        setVideoStreamState((prevstate) => ({
+            ...prevstate,
+            video: !prevstate.video,
+            action: "video"
+        }));
     }
 
     function toggleAudio() {
-        setVideoStreamState(prevstate => ({ ...prevstate, audio: !prevstate.audio, action: 'audio' }));
+        setVideoStreamState((prevstate) => ({
+            ...prevstate,
+            audio: !prevstate.audio,
+            action: "audio"
+        }));
     }
-
 
     function handleVideoTrack() {
         if (streamRef.current) {
-            streamRef.current.getVideoTracks().forEach(track => track.enabled = !track.enabled);
+            streamRef.current
+                .getVideoTracks()
+                .forEach((track) => (track.enabled = !track.enabled));
         }
-
     }
 
     function handleAudioTrack() {
         if (streamRef.current) {
-            streamRef.current.getAudioTracks().forEach(track => track.enabled = !track.enabled);
+            streamRef.current
+                .getAudioTracks()
+                .forEach((track) => (track.enabled = !track.enabled));
         }
     }
 
-
     function handleVideoVolume() {
-        setVideoVolume(prevstate => !prevstate);
+        setVideoVolume((prevstate) => !prevstate);
     }
 
+    function addLiveVideosToState(data) {
+       
+        // const { userId, peerId, meetingId, stream } = data;
+        // const liveStreams = [...meetingLiveStreams];
+        // const index = liveStreams.findIndex(
+        //     (stream) => stream.userId === userId && stream.meetingId === meetingId
+        // );
+
+        // if (index !== -1) {
+        //     liveStreams[index] = { userId, peerId, meetingId, stream };
+        // } else {
+        //     liveStreams.push({ userId, peerId, meetingId, stream });
+        // }
+        // setMeetingLiveStreams(liveStreams);
+
+        setMeetingLiveStreams(prevstate => [...prevstate, data.stream]);
+    }
 
     const UserMediaContextProps = {
         startMediaCapture,
@@ -111,15 +149,20 @@ export function UserMediaProvider({ children }) {
         handleVideoTrack,
         handleAudioTrack,
         handleVideoVolume,
-        videoVolume
+        videoVolume,
+        meetingLiveStreams
     };
 
 
-    return <UserMediaContext.Provider value={UserMediaContextProps}>
-        {children}
-    </UserMediaContext.Provider>
-}
+    console.log(meetingLiveStreams, 'meetingLiveStreams');
 
+
+    return (
+        <UserMediaContext.Provider value={UserMediaContextProps}>
+            {children}
+        </UserMediaContext.Provider>
+    );
+}
 
 export function useUserMediaContext() {
     return useContext(UserMediaContext);

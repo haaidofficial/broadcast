@@ -5,7 +5,6 @@ import { serverConstants } from "../constants/server-constants";
 import { socketEventsConstants } from "../constants/socket-event-constants";
 import { initPeerConnection } from "../services/RTCPeerConnection";
 
-
 const SocketContext = createContext();
 const socket = io(serverConstants.SERVER_BASE_URL);
 
@@ -24,14 +23,16 @@ export function SocketContextProvider({ children }) {
 
   const [messageList, setMessageList] = useState([]);
   const [participantList, setParticipantList] = useState([]);
-  const [newJoineePeerId, setNewJoineePeerId] = useState('');
+  const [newJoineePeerDetail, setNewJoineePeerDetail] = useState({ userId: '', peerId: '' });
 
   const meetingIdRef = useRef("");
   const userRef = useRef({ userId: "", username: "" });
   const peerConnectionRef = useRef({
     peer: "",
-    peerId: ""
+    peerId: "",
+    userType: ""
   });
+  const [peerState, setPeerState] = useState(null);
 
   useEffect(() => {
     listToNewMessageInMeeting();
@@ -72,7 +73,7 @@ export function SocketContextProvider({ children }) {
       }
       console.log(userRef.current, "userRef.current");
 
-      userRef.current = createUser(username);
+      userRef.current = createUser(username, userType);
       socket.emit(socketEventsConstants.CREATE_MEETING, {
         meetingId,
         userId: userRef.current.userId,
@@ -98,9 +99,6 @@ export function SocketContextProvider({ children }) {
 
         // setMeetingAlert(prevState => ({ action: socketEventsConstants.MEETING_CREATED, isVisible: true, message: 'Meeting created successfully', severity: 'success' }));
         // console.log('Meeting created');
-
-
-
       });
     });
   }
@@ -124,10 +122,11 @@ export function SocketContextProvider({ children }) {
     socket.on("new_message_in_meeting", insertMessageInChatState);
   }
 
-  function createUser(username) {
+  function createUser(username, userType) {
     const user = {
       userId: "",
-      username: ""
+      username: "",
+      userType: ""
     };
 
     const userFromLocalStorage = window.localStorage.getItem("MEETING_USER_ID");
@@ -135,11 +134,13 @@ export function SocketContextProvider({ children }) {
     if (window.localStorage.getItem("MEETING_USER_ID") === null) {
       user.userId = UUIDV4();
       user.username = username;
+      user.userType = userType;
       window.localStorage.setItem("MEETING_USER_ID", JSON.stringify(user));
     } else {
       const { userId, username } = JSON.parse(userFromLocalStorage);
       user.userId = userId;
       user.username = username;
+      user.userType = userType;
     }
 
     return user;
@@ -180,8 +181,8 @@ export function SocketContextProvider({ children }) {
     try {
       const { peer, peerId } = await initPeerConnection();
       peerConnectionRef.current = { peer, peerId };
+      setPeerState(peer);
       insertPeerIdInsideMeeting();
-
     } catch (err) {
       console.log(err);
     }
@@ -196,26 +197,16 @@ export function SocketContextProvider({ children }) {
       user: userRef.current
     });
 
-
-
-    function addConnectedParticipantList(newJoineePeerId) {
+    function addConnectedParticipantList(newJoineePeer) {
       // setParticipantList(list);
-      setNewJoineePeerId(newJoineePeerId);
+      setNewJoineePeerDetail({ userId: newJoineePeer.userId, peerId: newJoineePeer.newJoineePeerId });
     }
 
-
-
-    socket.on('new_participant_joined', (data) => {
-      console.log('new_participant_joined', data);
-      addConnectedParticipantList(data.newJoineePeerId);
+    socket.on("new_participant_joined", (data) => {
+      console.log("new_participant_joined", data);
+      addConnectedParticipantList(data);
     });
-
   }
-
-
-
-
-
 
   const contextProviderValues = {
     createMeeting,
@@ -231,9 +222,10 @@ export function SocketContextProvider({ children }) {
     setIsMeetingCreated,
     messageList,
     participantList,
-    newJoineePeerId,
+    newJoineePeerDetail,
     socket,
-    peerConnectionRef
+    peerConnectionRef,
+    peerState,
   };
 
   return (
