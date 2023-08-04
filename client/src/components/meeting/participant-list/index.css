@@ -1,7 +1,6 @@
-.participant-list {
+ .participant-list {
     height: 100%;
 }
-
 
 .participant-list-container {
     height: 100%;
@@ -38,8 +37,35 @@
     align-items: center;
     justify-content: flex-end;
     width: 230px;
+    /* flex-direction: column; */
 }
 
 .participant-item-list {
     height: 600px;
+}
+
+
+.share-invitation-box {
+    width: 100%;
+    border: 1px solid #acacac;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.share-invitation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: transparent;
+    border: none;
+    width: 100%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.share-invitation span{
+    color: white;
 }

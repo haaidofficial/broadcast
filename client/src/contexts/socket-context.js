@@ -23,7 +23,10 @@ export function SocketContextProvider({ children }) {
 
   const [messageList, setMessageList] = useState([]);
   const [participantList, setParticipantList] = useState([]);
-  const [newJoineePeerDetail, setNewJoineePeerDetail] = useState({ userId: '', peerId: '' });
+  const [newJoineePeerDetail, setNewJoineePeerDetail] = useState({
+    userId: "",
+    peerId: ""
+  });
 
   const meetingIdRef = useRef("");
   const userRef = useRef({ userId: "", username: "" });
@@ -198,8 +201,12 @@ export function SocketContextProvider({ children }) {
     });
 
     function addConnectedParticipantList(newJoineePeer) {
+      console.log(newJoineePeer, "newJoineePeer");
       // setParticipantList(list);
-      setNewJoineePeerDetail({ userId: newJoineePeer.userId, peerId: newJoineePeer.newJoineePeerId });
+      setNewJoineePeerDetail({
+        userId: newJoineePeer.userId,
+        peerId: newJoineePeer.newJoineePeerId
+      });
     }
 
     socket.on("new_participant_joined", (data) => {
@@ -225,7 +232,7 @@ export function SocketContextProvider({ children }) {
     newJoineePeerDetail,
     socket,
     peerConnectionRef,
-    peerState,
+    peerState
   };
 
   return (

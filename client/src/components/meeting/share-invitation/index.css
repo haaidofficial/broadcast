@@ -1,0 +1,24 @@
+.share-invitation {
+    /* display: flex;
+    justify-content: center;
+    align-items: center;
+    background: transparent;
+    border: none;
+    width: 100%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center; */
+}
+
+/* .share-invitation span{
+    color: white;
+} */
+
+
+.invitation-btn{
+    border: 1px solid white!important;
+    border-radius: 0px!important;
+    margin-right: 10px!important;
+    cursor: pointer!important;
+}

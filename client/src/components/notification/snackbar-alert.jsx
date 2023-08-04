@@ -9,7 +9,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 
 export function CommonSnackbarAlert({ snackbarBehaviourState }) {
 
-    const { isOpen, message, severity, clearAlerts } = snackbarBehaviourState;
+    const { isOpen, message, severity, clearAlerts} = snackbarBehaviourState;
     const [open, setOpen] = React.useState(isOpen);
 
     console.log(snackbarBehaviourState, open);

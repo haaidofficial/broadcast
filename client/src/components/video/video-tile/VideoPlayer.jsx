@@ -1,23 +1,20 @@
 import { useEffect, useRef } from "react";
 // import { useUserMediaContext } from "../../../contexts/user-media-context";
 import "./index.css";
+import { KeyOffTwoTone } from "@mui/icons-material";
 
-export function VideoPlayer({ videoStream }) {
+export function VideoPlayer({ videoStream, key }) {
+  const userVideoRef = useRef(null);
 
-    const userVideoRef = useRef(null);
+  useEffect(() => {
+    userVideoRef.current.srcObject = videoStream;
+  }, [videoStream]);
 
-    useEffect(() => {
-        debugger
-        userVideoRef.current.srcObject = videoStream;
-    }, []);
-
-    return (
-        <>
-            <video id="main-video" ref={userVideoRef} autoPlay>
-                <source type="video/mp4" />
-            </video>
-        </>
-    );
+  return (
+    <>
+      <video ref={userVideoRef} autoPlay key={KeyOffTwoTone}>
+        <source type="video/mp4" />
+      </video>
+    </>
+  );
 }
-
-
