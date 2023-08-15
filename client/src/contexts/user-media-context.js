@@ -26,13 +26,25 @@ export function UserMediaProvider({ children }) {
     peerConnectionRef,
     newJoineePeerDetail,
     peerState,
-    userRef
+    userRef,
+    addVideoStreamDetailsToUser,
+    meetingVideoStreamsRef
   } = useSocketContext();
   const [meetingLiveStreams, setMeetingLiveStreams] = useState([]);
+
+  // useEffect(() => {
+  //   if (peerConnectionRef.current.peerId) {
+  //     startMediaCapture("");
+  //   }
+
+  // }, [peerConnectionRef.current.peerId]);
+
+
 
   useEffect(() => {
     startMediaCapture("");
   }, []);
+
 
   useEffect(() => {
     debugger;
@@ -51,7 +63,7 @@ export function UserMediaProvider({ children }) {
     debugger;
     if (
       newJoineePeerDetail.peerId &&
-      userRef.current &&
+      userRef.current.userType === 'organiser' &&
       peerConnectionRef.current.peer
     ) {
       connectToNewUserUsingPeer(
@@ -73,6 +85,7 @@ export function UserMediaProvider({ children }) {
         // const _video = document.getElementById("main-video");
         // _video.style.margin = "10px";
         // _video.srcObject = streamRef.current;
+        addVideoStreamDetailsToUser(streamRef.current.id, userRef.current.userId, meetingIdRef.current);
         addLiveVideosToState({ stream: streamRef.current });
 
         // if (participantList.length) {
@@ -141,7 +154,22 @@ export function UserMediaProvider({ children }) {
     // }
     // setMeetingLiveStreams(liveStreams);
 
+
+    console.log(meetingVideoStreamsRef.current, 'meetingVideoStreamsRef');
+
+
+
+
+
+
     setMeetingLiveStreams((prevstate) => [...prevstate, data.stream]);
+
+    const finalVideoStreams = [];
+    const tempVideoStreams = [...meetingLiveStreams, data.stream];
+
+   meetingVideoStreamsRef.current.forEach(participant => {
+      
+   });
   }
 
   const UserMediaContextProps = {

@@ -29,12 +29,15 @@ export function SocketContextProvider({ children }) {
   });
 
   const meetingIdRef = useRef("");
-  const userRef = useRef({ userId: "", username: "" });
+  const userRef = useRef({ userId: "", username: "", userType: "" });
   const peerConnectionRef = useRef({
     peer: "",
     peerId: "",
     userType: ""
   });
+
+  const meetingVideoStreamsRef = useRef([]);
+
   const [peerState, setPeerState] = useState(null);
 
   useEffect(() => {
@@ -211,9 +214,40 @@ export function SocketContextProvider({ children }) {
 
     socket.on("new_participant_joined", (data) => {
       console.log("new_participant_joined", data);
+      updateParticipantsVideoStreams(data);
       addConnectedParticipantList(data);
     });
   }
+
+
+
+  function addVideoStreamDetailsToUser(streamId, userId, meetingId) {
+    socket.emit('insert_video_stream_id_inside_user', {
+      streamId, userId, meetingId
+    });
+
+
+
+    socket.on('stream_id_added_inside_user', (data) => {
+      const { status, userId, meetingId } = data;
+      console.log(status);
+    });
+  }
+
+
+
+  function updateParticipantsVideoStreams(data) {
+    const { participantList } = data;
+
+    meetingVideoStreamsRef.current = participantList;
+  }
+
+  function findUserExists(userId) {
+    return meetingVideoStreamsRef.current.findIndex(participant => participant.userId === userId);
+
+
+  }
+
 
   const contextProviderValues = {
     createMeeting,
@@ -232,7 +266,9 @@ export function SocketContextProvider({ children }) {
     newJoineePeerDetail,
     socket,
     peerConnectionRef,
-    peerState
+    peerState,
+    addVideoStreamDetailsToUser,
+    meetingVideoStreamsRef
   };
 
   return (

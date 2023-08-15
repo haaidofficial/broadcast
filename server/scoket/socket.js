@@ -82,10 +82,32 @@ function initSocket(httpServer) {
           userId,
           meetingId,
           participantList,
-          newJoineePeerId: peerId
+          newJoineePeerId: peerId,
         });
       }
     });
+
+
+    socket.on("insert_video_stream_id_inside_user", (data) => {
+      const { streamId, userId, meetingId } = data;
+
+      const index = findIndexIfUserExists(meetingId, userId);
+
+      if (index !== -1) {
+        meetingUsersList[index].streamId = streamId;
+        io.to(meetingId).emit("stream_id_added_inside_user", {
+          status: "video-stream-added",
+          userId,
+          meetingId
+        });
+
+
+        console.log(meetingUsersList, 'meetingUsersList');
+      }
+
+    });
+
+
   });
 }
 
